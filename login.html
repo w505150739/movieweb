@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title></title>
+  <title>影视管理系统</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
@@ -24,7 +24,7 @@
 <body class="hold-transition login-page">
 <div class="login-box" id="rrapp" v-cloak>
   <div class="login-logo">
-    <!--<b>影视管理系统</b>-->
+    <b>影视管理系统</b>
   </div>
   <!-- /.login-logo -->
   <div class="login-box-body">
@@ -93,12 +93,12 @@
                     contentType: "application/json",
                     data: JSON.stringify(vm.form),
                     success: function(r){
-                        if(r.result == 0){//登录成功
-                            localStorage.setItem("token", r.data.token);
+                        if(r.code == 0){//登录成功
+                            localStorage.setItem("token", r.token);
                             parent.location.href ='index.html';
                         }else{
                             vm.error = true;
-                            vm.errorMsg = r.message;
+                            vm.errorMsg = r.msg;
                         }
                     }
                 });
