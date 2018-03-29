@@ -1,17 +1,16 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: baseURL + 'sys/member/list',
+        url: baseURL + 'sys/news/list',
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '用户名', name: 'userName', index: 'user_name', width: 80 },
-			{ label: '邮箱', name: 'email', index: 'email', width: 80 },
-			{ label: '手机号', name: 'phone', index: 'phone', width: 80 },
-			{ label: '注册时间', name: 'createTime', index: 'create_time', width: 80 },
-			{ label: '姓名', name: 'name', index: 'name', width: 80 },
-			{ label: '性别', name: 'sex', index: 'sex', width: 80, formatter:currencyFmatter },
-			{ label: '年龄', name: 'age', index: 'age', width: 80 }, 			
-			{ label: '通讯地址', name: 'address', index: 'address', width: 80 }
+			{ label: '资讯标题', name: 'title', index: 'title', width: 80 }, 			
+			{ label: '资讯类型', name: 'type', index: 'type', width: 80 }, 			
+			{ label: '状态 1、可用 2、已删除', name: 'status', index: 'status', width: 80 }, 			
+			{ label: '是否显示 1 显示 0 不显示', name: 'showFlag', index: 'show_flag', width: 80 }, 			
+			{ label: '资讯内容', name: 'content', index: 'content', width: 80 }, 			
+			{ label: '创建时间', name: 'createTime', index: 'create_time', width: 80 }, 			
+			{ label: '更新时间', name: 'updateTime', index: 'update_time', width: 80 }			
         ],
 		viewrecords: true,
         height: 385,
@@ -39,28 +38,24 @@ $(function () {
         }
     });
 });
-function currencyFmatter(cellvalue, options, rowObject) {
-
-	console.log(cellvalue);
-	console.log(options);
-	console.log(rowObject);
-	if(rowObject.sex === 1){
-        return "男";
-    }
-    if(rowObject.sex === 0){
-        return "女";
-    }
-    if(rowObject.sex == null){
-        return "保密";
-    }
-}
 var vm = new Vue({
 	el:'#rrapp',
 	data:{
+        q:{
+            title: null,
+			status:null
+        },
 		showList: true,
 		title: null,
-		member: {}
+		news: {}
 	},
+    ready : function(){
+        var _this = this;
+        var E = window.wangEditor;
+        var editor = new E('#editor');
+        editor.create();
+
+    },
 	methods: {
 		query: function () {
 			vm.reload();
@@ -68,7 +63,8 @@ var vm = new Vue({
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";
-			vm.member = {};
+			vm.news = {};
+			window.location.href = "../news/newsadd.html";
 		},
 		update: function (event) {
 			var id = getSelectedRow();
@@ -81,12 +77,12 @@ var vm = new Vue({
             vm.getInfo(id)
 		},
 		saveOrUpdate: function (event) {
-			var url = vm.member.id == null ? "sys/member/save" : "sys/member/update";
+			var url = vm.news.id == null ? "sys/news/save" : "sys/news/update";
 			$.ajax({
 				type: "POST",
 			    url: baseURL + url,
                 contentType: "application/json",
-			    data: JSON.stringify(vm.member),
+			    data: JSON.stringify(vm.news),
 			    success: function(r){
 			    	if(r.code === 0){
 						alert('操作成功', function(index){
@@ -107,7 +103,7 @@ var vm = new Vue({
 			confirm('确定要删除选中的记录？', function(){
 				$.ajax({
 					type: "POST",
-				    url: baseURL + "sys/member/delete",
+				    url: baseURL + "sys/news/delete",
                     contentType: "application/json",
 				    data: JSON.stringify(ids),
 				    success: function(r){
@@ -123,8 +119,8 @@ var vm = new Vue({
 			});
 		},
 		getInfo: function(id){
-			$.get(baseURL + "sys/member/info/"+id, function(r){
-                vm.member = r.member;
+			$.get(baseURL + "sys/news/info/"+id, function(r){
+                vm.news = r.news;
             });
 		},
 		reload: function (event) {

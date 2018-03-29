@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>新闻资讯表</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <script src="../../libs/jquery.min.js"></script>
+    <script src="../../plugins/layer/layer.js"></script>
+    <script src="../../libs/bootstrap.min.js"></script>
+    <script src="../../libs/vue.min.js"></script>
+    <script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+    <script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+    <script src="../../plugins/edit/wangEditor.min.js"></script>
+    <script src="../../js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" v-model="q.title" @keyup.enter="query" placeholder="标题">
+            </div>
+            <div class="form-group col-sm-2">
+
+                <div class="col-sm-2 control-label">状态</div>
+                <label class="radio-inline">
+                    <input type="radio" name="status" value="0" v-model="q.status"/> 禁用
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="status" value="1" v-model="q.status"/> 正常
+                </label>
+            </div>
+            <a class="btn btn-default" @click="query">查询</a>
+            <a v-if="hasPermission('sys:news:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+            <a v-if="hasPermission('sys:news:update')" class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+            <a v-if="hasPermission('sys:news:delete')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+
+        <form class="form-horizontal" style="width: 1000px">
+                                                                            <div class="form-group">
+                        <div class="col-sm-2 control-label">资讯标题</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="news.title" placeholder="资讯标题"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">资讯类型</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="news.type" placeholder="资讯类型"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">状态 1、可用 2、已删除</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="news.status" placeholder="状态 1、可用 2、已删除"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">是否显示</div>
+                        <div class="col-sm-10">
+                            <select v-model="news.showFlag" class="form-control">
+                                <option value="1">是</option>
+                                <option value="0">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">资讯内容</div>
+                        <div id="editor" class="col-sm-10">
+                            <p>欢迎使用 <b>wangEditor</b> 富文本编辑器</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">创建时间</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="news.createTime" placeholder="创建时间"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">更新时间</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="news.updateTime" placeholder="更新时间"/>
+                        </div>
+                    </div>
+                                        <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="../../js/modules/news/news.js"></script>
+</body>
+</html>
