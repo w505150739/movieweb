@@ -19,7 +19,8 @@ T.p = url;
 
 //请求前缀
 //var baseURL = "/renren-fast/";
-var baseURL = "http://localhost:8080/moviemanage/";
+// var baseURL = "http://193.112.67.154:9599/moviemanage/";
+ var baseURL = "http://localhost:8080/moviemanage/";
 
 //登录token
 var token = localStorage.getItem("token");

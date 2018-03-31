@@ -6,9 +6,8 @@ $(function () {
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
 			{ label: '资讯标题', name: 'title', index: 'title', width: 80 }, 			
 			{ label: '资讯类型', name: 'type', index: 'type', width: 80 }, 			
-			{ label: '状态 1、可用 2、已删除', name: 'status', index: 'status', width: 80 }, 			
-			{ label: '是否显示 1 显示 0 不显示', name: 'showFlag', index: 'show_flag', width: 80 }, 			
-			{ label: '资讯内容', name: 'content', index: 'content', width: 80 }, 			
+			{ label: '状态', name: 'status', index: 'status', width: 80 },
+			{ label: '是否显示', name: 'showFlag', index: 'show_flag', width: 80 },
 			{ label: '创建时间', name: 'createTime', index: 'create_time', width: 80 }, 			
 			{ label: '更新时间', name: 'updateTime', index: 'update_time', width: 80 }			
         ],
@@ -49,13 +48,6 @@ var vm = new Vue({
 		title: null,
 		news: {}
 	},
-    ready : function(){
-        var _this = this;
-        var E = window.wangEditor;
-        var editor = new E('#editor');
-        editor.create();
-
-    },
 	methods: {
 		query: function () {
 			vm.reload();
