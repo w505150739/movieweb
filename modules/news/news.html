@@ -17,6 +17,11 @@
     <script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
     <script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
     <script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+    <script src="../../plugins/edit/ueditor.config.js"></script>
+    <script src="../../plugins/edit/ueditor.all.min.js"> </script>
+    <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+    <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+    <script src="../../plugins/edit/lang/zh-cn/zh-cn.js"></script>
     <script src="../../js/common.js"></script>
 </head>
 <body>
@@ -27,14 +32,11 @@
                 <input type="text" class="form-control" v-model="q.title" @keyup.enter="query" placeholder="标题">
             </div>
             <div class="form-group col-sm-2">
-
-                <div class="col-sm-2 control-label">状态</div>
-                <label class="radio-inline">
-                    <input type="radio" name="status" value="0" v-model="q.status"/> 禁用
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="status" value="1" v-model="q.status"/> 正常
-                </label>
+                <select v-model="q.status" class="form-control">
+                    <option value="" checked="true">请选择状态</option>
+                    <option value="1">正常</option>
+                    <option value="2">已删除</option>
+                </select>
             </div>
             <a class="btn btn-default" @click="query">查询</a>
             <a v-if="hasPermission('sys:news:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
@@ -48,22 +50,21 @@
         <div class="panel-heading">{{title}}</div>
 
         <form class="form-horizontal" style="width: 1000px">
-                                                                            <div class="form-group">
+                    <div class="form-group">
                         <div class="col-sm-2 control-label">资讯标题</div>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" v-model="news.title" placeholder="资讯标题"/>
                         </div>
                     </div>
-                                                                <div class="form-group">
+                    <div class="form-group">
                         <div class="col-sm-2 control-label">资讯类型</div>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="news.type" placeholder="资讯类型"/>
-                        </div>
-                    </div>
-                                                                <div class="form-group">
-                        <div class="col-sm-2 control-label">状态 1、可用 2、已删除</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="news.status" placeholder="状态 1、可用 2、已删除"/>
+                            <div class="col-sm-10">
+                                <select name="type" class="form-control">
+                                    <option value="1">广告</option>
+                                    <option value="2">新闻</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -77,23 +78,11 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-2 control-label">资讯内容</div>
-                        <div id="editor" class="col-sm-10">
-                            <p>欢迎使用 <b>wangEditor</b> 富文本编辑器</p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2 control-label">创建时间</div>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="news.createTime" placeholder="创建时间"/>
+                            <script id="editor" type="text/plain" style="width:700px;height:300px;"></script>
                         </div>
                     </div>
-                                                                <div class="form-group">
-                        <div class="col-sm-2 control-label">更新时间</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="news.updateTime" placeholder="更新时间"/>
-                        </div>
-                    </div>
-                                        <div class="form-group">
+            <div class="form-group">
                 <div class="col-sm-2 control-label"></div>
                 <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
                 &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>

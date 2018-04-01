@@ -5,11 +5,10 @@ $(function () {
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
 			{ label: '资讯标题', name: 'title', index: 'title', width: 80 }, 			
-			{ label: '资讯类型', name: 'type', index: 'type', width: 80 }, 			
-			{ label: '状态', name: 'status', index: 'status', width: 80 },
-			{ label: '是否显示', name: 'showFlag', index: 'show_flag', width: 80 },
-			{ label: '创建时间', name: 'createTime', index: 'create_time', width: 80 }, 			
-			{ label: '更新时间', name: 'updateTime', index: 'update_time', width: 80 }			
+			{ label: '资讯类型', name: 'type', index: 'type', width: 80, formatter:typeFmatter  },
+			{ label: '状态', name: 'status', index: 'status', width: 80, formatter:currencyFmatter  },
+			{ label: '是否显示', name: 'showFlag', index: 'show_flag', width: 80, formatter:showFmatter  },
+			{ label: '创建时间', name: 'createTime', index: 'create_time', width: 80 }			
         ],
 		viewrecords: true,
         height: 385,
@@ -31,32 +30,81 @@ $(function () {
             rows:"limit", 
             order: "order"
         },
+        sortname: "create_time",
+        sortorder: "desc",
         gridComplete:function(){
         	//隐藏grid底部滚动条
         	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
         }
     });
 });
+function currencyFmatter(cellvalue, options, rowObject) {
+
+    if(rowObject.status === 1){
+        return "正常";
+    }
+    if(rowObject.status === 2){
+        return "已删除";
+    }
+}
+function showFmatter(cellvalue, options, rowObject) {
+
+    if(rowObject.showFlag == 1){
+        return "是";
+    }
+    if(rowObject.showFlag == 0){
+        return "否";
+    }
+}
+function typeFmatter(cellvalue, options, rowObject) {
+    if(rowObject.type == 1){
+        return "广告";
+    }
+    if(rowObject.type == 2){
+        return "新闻";
+    }
+}
 var vm = new Vue({
 	el:'#rrapp',
 	data:{
         q:{
             title: null,
-			status:null
+			status:""
         },
 		showList: true,
 		title: null,
-		news: {}
+		news: {},
+        ue: ''
 	},
+    mounted() {
+		//实例化编辑器
+		//建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+        this.ue = UE.getEditor('editor',{
+            toolbars: [[
+                'fullscreen', 'source', '|', 'undo', 'redo', '|',
+                'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', '|', 'forecolor','insertorderedlist', 'insertunorderedlist','|',
+                'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+                'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+                'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
+                'insertimage', 'insertvideo'
+            ]]
+        });
+    },
 	methods: {
 		query: function () {
-			vm.reload();
+            var page = $("#jqGrid").jqGrid('getGridParam','page');
+            $("#jqGrid").jqGrid('setGridParam',{
+            	_search: true,
+                page:page,
+                postData:{'title':vm.q.title,'status':vm.q.status}
+            }).trigger("reloadGrid");
 		},
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";
-			vm.news = {};
-			window.location.href = "../news/newsadd.html";
+            vm.news = {};
+            vm.ue.setContent('');
+			//window.location.href = "../news/newsadd.html";
 		},
 		update: function (event) {
 			var id = getSelectedRow();
@@ -66,10 +114,19 @@ var vm = new Vue({
 			vm.showList = false;
             vm.title = "修改";
             
-            vm.getInfo(id)
+            vm.getInfo(id);
 		},
 		saveOrUpdate: function (event) {
-			var url = vm.news.id == null ? "sys/news/save" : "sys/news/update";
+            var url;
+            var flag;//1 代表增加 2 代表更新
+            if(vm.news.id == null){
+                url = "sys/news/save";
+                flag = "1";
+            }else{
+                url = "sys/news/update";
+                vm.news.content = null;
+                flag = "2";
+            }
 			$.ajax({
 				type: "POST",
 			    url: baseURL + url,
@@ -78,7 +135,23 @@ var vm = new Vue({
 			    success: function(r){
 			    	if(r.code === 0){
 						alert('操作成功', function(index){
-							vm.reload();
+                            var newsId;
+                            if(flag == "1"){
+                                newsId = r.id;
+                            }else{
+                                newsId = vm.news.id
+                            }
+                            $.ajax({
+                                type: "POST",
+                                url: baseURL + "sys/news/updateContent",
+                                data: {
+                                    content: vm.ue.getContent(),
+                                    id: newsId
+                                },
+                                success: function(r){
+                                    vm.reload();
+                                }
+                            });
 						});
 					}else{
 						alert(r.msg);
@@ -113,6 +186,7 @@ var vm = new Vue({
 		getInfo: function(id){
 			$.get(baseURL + "sys/news/info/"+id, function(r){
                 vm.news = r.news;
+                vm.ue.setContent(r.news.content);
             });
 		},
 		reload: function (event) {

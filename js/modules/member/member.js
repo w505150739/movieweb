@@ -41,9 +41,6 @@ $(function () {
 });
 function currencyFmatter(cellvalue, options, rowObject) {
 
-	console.log(cellvalue);
-	console.log(options);
-	console.log(rowObject);
 	if(rowObject.sex === 1){
         return "男";
     }
