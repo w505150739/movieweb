@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>项目表</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <script src="../../libs/jquery.min.js"></script>
+    <script src="../../plugins/layer/layer.js"></script>
+    <script src="../../libs/bootstrap.min.js"></script>
+    <script src="../../libs/vue.min.js"></script>
+    <script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+    <script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+    <script src="../../js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <a v-if="hasPermission('project:project:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+            <a v-if="hasPermission('project:project:update')" class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+            <a v-if="hasPermission('project:project:delete')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+            <a v-if="hasPermission('project:project:approval')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;提审</a>
+            <a v-if="hasPermission('project:project:examine')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;审核</a>
+            <a v-if="hasPermission('project:project:publish')" class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;发布</a>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+                                                                            <div class="form-group">
+                        <div class="col-sm-2 control-label">项目名称</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.projectName" placeholder="项目名称"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">影片id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.movieId" placeholder="影片id"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">项目成本</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.projectCost" placeholder="项目成本"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">项目发起人</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.projectHeader" placeholder="项目发起人"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">筹资金额</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.financingMoney" placeholder="筹资金额"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">投资开始时间</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.startTime" placeholder="投资开始时间"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">投资结束时间</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.endTime" placeholder="投资结束时间"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">项目标签 如 永久版权 永久福利等</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.projectLabel" placeholder="项目标签 如 永久版权 永久福利等"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">项目服务费</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.projectCoverCharge" placeholder="项目服务费"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">创建时间</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.createTime" placeholder="创建时间"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">项目类型 1 网络电影 2 院线电影</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.projectType" placeholder="项目类型 1 网络电影 2 院线电影"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">项目状态 1 即将上线 2 正在募集 3 募集完成</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.projectStatus" placeholder="项目状态 1 即将上线 2 正在募集 3 募集完成"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">更新时间</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.updateTime" placeholder="更新时间"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">状态 1、可用 2、已删除</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.status" placeholder="状态 1、可用 2、已删除"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">审核状态 1、新建 2、已提交未审核 3 驳回 4 审核通过</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.examineStatus" placeholder="审核状态 1、新建 2、已提交未审核 3 驳回 4 审核通过"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">是否发布 1 发布 0 未发布</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.publishStatus" placeholder="是否发布 1 发布 0 未发布"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">项目介绍</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.projectDes" placeholder="项目介绍"/>
+                        </div>
+                    </div>
+                                                                <div class="form-group">
+                        <div class="col-sm-2 control-label">审核意见</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="project.remark" placeholder="审核意见"/>
+                        </div>
+                    </div>
+                                        <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="../../js/modules/project/project.js"></script>
+</body>
+</html>
