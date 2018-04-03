@@ -4,24 +4,54 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '项目名称', name: 'projectName', index: 'project_name', width: 80 }, 			
-			{ label: '影片id', name: 'movieId', index: 'movie_id', width: 80 }, 			
+			{ label: '项目名称', name: 'projectName', index: 'project_name', width: 80 },	
 			{ label: '项目成本', name: 'projectCost', index: 'project_cost', width: 80 }, 			
 			{ label: '项目发起人', name: 'projectHeader', index: 'project_header', width: 80 }, 			
-			{ label: '筹资金额', name: 'financingMoney', index: 'financing_money', width: 80 }, 			
-			{ label: '投资开始时间', name: 'startTime', index: 'start_time', width: 80 }, 			
-			{ label: '投资结束时间', name: 'endTime', index: 'end_time', width: 80 }, 			
-			{ label: '项目标签 如 永久版权 永久福利等', name: 'projectLabel', index: 'project_label', width: 80 }, 			
-			{ label: '项目服务费', name: 'projectCoverCharge', index: 'project_cover_charge', width: 80 }, 			
-			{ label: '创建时间', name: 'createTime', index: 'create_time', width: 80 }, 			
-			{ label: '项目类型 1 网络电影 2 院线电影', name: 'projectType', index: 'project_type', width: 80 }, 			
-			{ label: '项目状态 1 即将上线 2 正在募集 3 募集完成', name: 'projectStatus', index: 'project_status', width: 80 }, 			
-			{ label: '更新时间', name: 'updateTime', index: 'update_time', width: 80 }, 			
-			{ label: '状态 1、可用 2、已删除', name: 'status', index: 'status', width: 80 }, 			
-			{ label: '审核状态 1、新建 2、已提交未审核 3 驳回 4 审核通过', name: 'examineStatus', index: 'examine_status', width: 80 }, 			
-			{ label: '是否发布 1 发布 0 未发布', name: 'publishStatus', index: 'publish_status', width: 80 }, 			
-			{ label: '项目介绍', name: 'projectDes', index: 'project_des', width: 80 }, 			
-			{ label: '审核意见', name: 'remark', index: 'remark', width: 80 }			
+			{ label: '筹资金额', name: 'financingMoney', index: 'financing_money', width: 60 },	
+			{ label: '筹资开始', name: 'startTime', index: 'start_time', width: 90 },	
+			{ label: '筹资结束', name: 'endTime', index: 'end_time', width: 90 },	
+			{ label: '创建时间', name: 'createTime', index: 'create_time', width: 90 }, 			
+			{ label: '项目类型', name: 'projectType', index: 'project_type', width: 60,  formatter: function(value, options, row){
+				if(value === 1){
+					return '<span class="label label-success">网络电影</span>';
+				}
+				if(value === 2){
+					return '<span class="label label-danger">院线电影</span>';
+				}
+			}}, 			
+			{ label: '项目状态', name: 'projectStatus', index: 'project_status', width: 60, formatter: function(value, options, row){
+				if(value === 1){
+					return '<span class="label label-success">即将上线</span>';
+				}
+				if(value === 2){
+					return '<span class="label label-danger">正在募集</span>';
+				}
+				if(value === 3){
+					return '<span class="label label-danger">募集完成</span>';
+				}
+			}},
+			{ label: '审核状态', name: 'examineStatus', index: 'examine_status', width: 60, formatter: function(value, options, row){
+				if(value === 1){
+					return '<span class="label label-success">新建</span>';
+				}
+				if(value === 2){
+					return '<span class="label label-danger">已提交未审核</span>';
+				}
+				if(value === 3){
+					return '<span class="label label-danger">驳回</span>';
+				}
+				if(value === 4){
+					return '<span class="label label-danger"> 审核通过</span>';
+				}
+			}}, 			
+			{ label: '是否发布', name: 'publishStatus', index: 'publish_status', width: 60, formatter: function(value, options, row){
+				if(value === 1){
+					return '<span class="label label-success">发布</span>';
+				}
+				if(value === 0){
+					return '<span class="label label-danger">未发布</span>';
+				}
+			}}		
         ],
 		viewrecords: true,
         height: 385,
@@ -51,7 +81,6 @@ $(function () {
         }
     });
 });
-
 var vm = new Vue({
 	el:'#rrapp',
 	data:{
@@ -59,6 +88,28 @@ var vm = new Vue({
 		title: null,
 		project: {}
 	},
+	mounted() {
+		laydate.render({
+			elem: '#start_time',
+			type: 'datetime'
+		});
+		laydate.render({
+			elem: '#end_time'
+			,type: 'datetime'
+		});
+		//实例化编辑器
+		//建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+        this.ue = UE.getEditor('editor',{
+            toolbars: [[
+                'fullscreen', 'source', '|', 'undo', 'redo', '|',
+                'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', '|', 'forecolor','insertorderedlist', 'insertunorderedlist','|',
+                'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+                'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+                'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
+                'insertimage', 'insertvideo'
+            ]]
+        }); 
+    },
 	methods: {
 		query: function () {
 			vm.reload();
@@ -80,6 +131,8 @@ var vm = new Vue({
 		},
 		saveOrUpdate: function (event) {
 			var url = vm.project.id == null ? "project/project/save" : "project/project/update";
+			vm.project.startTime = $("#start_time").val();
+			vm.project.endTime = $("#end_time").val();
 			$.ajax({
 				type: "POST",
 			    url: baseURL + url,
