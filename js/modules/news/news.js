@@ -117,8 +117,8 @@ var vm = new Vue({
             vm.getInfo(id);
 		},
 		saveOrUpdate: function (event) {
-            var url;
-            var flag;//1 代表增加 2 代表更新
+            var url = null;
+            var flag = null;//1 代表增加 2 代表更新
             if(vm.news.id == null){
                 url = "sys/news/save";
                 flag = "1";
@@ -127,37 +127,39 @@ var vm = new Vue({
                 vm.news.content = null;
                 flag = "2";
             }
-			$.ajax({
-				type: "POST",
-			    url: baseURL + url,
-                contentType: "application/json",
-			    data: JSON.stringify(vm.news),
-			    success: function(r){
-			    	if(r.code === 0){
-						alert('操作成功', function(index){
-                            var newsId;
-                            if(flag == "1"){
-                                newsId = r.id;
-                            }else{
-                                newsId = vm.news.id
-                            }
-                            $.ajax({
-                                type: "POST",
-                                url: baseURL + "sys/news/updateContent",
-                                data: {
-                                    content: vm.ue.getContent(),
-                                    id: newsId
-                                },
-                                success: function(r){
-                                    vm.reload();
+            if(vm.checkForm()){
+                $.ajax({
+                    type: "POST",
+                    url: baseURL + url,
+                    contentType: "application/json",
+                    data: JSON.stringify(vm.news),
+                    success: function(r){
+                        if(r.code === 0){
+                            alert('操作成功', function(index){
+                                var newsId;
+                                if(flag == "1"){
+                                    newsId = r.id;
+                                }else{
+                                    newsId = vm.news.id
                                 }
+                                $.ajax({
+                                    type: "POST",
+                                    url: baseURL + "sys/news/updateContent",
+                                    data: {
+                                        content: vm.ue.getContent(),
+                                        id: newsId
+                                    },
+                                    success: function(r){
+                                        vm.reload();
+                                    }
+                                });
                             });
-						});
-					}else{
-						alert(r.msg);
-					}
-				}
-			});
+                        }else{
+                            alert(r.msg);
+                        }
+                    }
+                });
+            }
 		},
 		del: function (event) {
 			var ids = getSelectedRows();
@@ -195,6 +197,21 @@ var vm = new Vue({
 			$("#jqGrid").jqGrid('setGridParam',{ 
                 page:page
             }).trigger("reloadGrid");
-		}
+        },
+        checkForm: function(){
+            if(vm.news.title === "" || vm.news.title === undefined){
+				layer.msg('资讯标题不能为空！', {icon: 0});
+				return false;
+            }
+            if(vm.news.type === "" || vm.news.type === undefined){
+				layer.msg('请选择资讯类型！', {icon: 0});
+				return false;
+            }
+            if(vm.news.showFlag === "" || vm.news.showFlag === undefined){
+				layer.msg('请选择是否显示！', {icon: 0});
+				return false;
+            }
+            return true;
+        }
 	}
 });

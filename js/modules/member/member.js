@@ -32,7 +32,9 @@ $(function () {
             page:"page", 
             rows:"limit", 
             order: "order"
-        },
+		},
+		sortname: "create_time",
+        sortorder: "desc",
         gridComplete:function(){
         	//隐藏grid底部滚动条
         	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
@@ -54,13 +56,22 @@ function currencyFmatter(cellvalue, options, rowObject) {
 var vm = new Vue({
 	el:'#rrapp',
 	data:{
+		q:{
+			userName:'',
+			phone:''
+		},
 		showList: true,
 		title: null,
 		member: {}
 	},
 	methods: {
 		query: function () {
-			vm.reload();
+			var page = $("#jqGrid").jqGrid('getGridParam','page');
+            $("#jqGrid").jqGrid('setGridParam',{
+            	_search: true,
+                page:page,
+                postData:{'userName':vm.q.userName,'phone':vm.q.phone}
+            }).trigger("reloadGrid");
 		},
 		add: function(){
 			vm.showList = false;

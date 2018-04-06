@@ -90,10 +90,9 @@ var vm = new Vue({
 			publishStatus: ""
         },
 		showList: true,
-		examineFlag: true,
 		title: null,
 		project: {},
-		ue: null
+		ue: ''
 	},
 	mounted() {
 		laydate.render({
@@ -193,7 +192,7 @@ var vm = new Vue({
 			}
 		},
 		checkUpdate: function(id){
-			$.ajax({
+			var flag = $.ajax({
 				type: "POST",
 				url: baseURL + "project/checkUpdate",
 				contentType: "application/json",
@@ -207,6 +206,7 @@ var vm = new Vue({
 					}
 				}
 			});
+			return flag;
 		},
 		del: function (event) {
 			var ids = getSelectedRow();
@@ -288,7 +288,6 @@ var vm = new Vue({
 					if(r.code == 0){
 						vm.getInfo(id);
 						vm.showList = false;
-						vm.examineFlag = false;
 						vm.title = "审核";
 					}else{
 						layer.msg(r.msg, {icon: 0});
@@ -391,10 +390,6 @@ var vm = new Vue({
 			}
 			if(vm.project.projectStatus === "" || vm.project.projectStatus === undefined){
 				layer.msg('请选择项目状态！', {icon: 0});
-				return false;
-			}
-			if(vm.project.publishStatus === "" || vm.project.publishStatus === undefined){
-				layer.msg('请选择发布状态！', {icon: 0});
 				return false;
 			}
 			return true;
