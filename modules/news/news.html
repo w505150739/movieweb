@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
     <link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
     <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../plugins/webuploader/webuploader.css">
     <script src="../../libs/jquery.min.js"></script>
     <script src="../../plugins/layer/layer.js"></script>
     <script src="../../libs/bootstrap.min.js"></script>
@@ -22,7 +23,11 @@
     <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
     <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
     <script src="../../plugins/edit/lang/zh-cn/zh-cn.js"></script>
+    <script src="../../plugins/webuploader/webuploader.min.js"></script>
     <script src="../../js/common.js"></script>
+    <style>    
+            #filePicker div:nth-child(2){width:100%!important;height:100%!important;}    
+    </style>
 </head>
 <body>
 <div id="rrapp" v-cloak>
@@ -74,6 +79,25 @@
                                 <option value="1">是</option>
                                 <option value="0">否</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">新闻图片</div>
+                        
+                        <div class="queueList">
+                            <div id="dndArea" class="placeholder">
+                                <div id="filePicker"></div>
+                                <p>或将照片拖到这里，单次最多可选300张</p>
+                            </div>
+                        </div>
+                        <div class="statusBar" style="display:none;">
+                            <div class="progress">
+                                <span class="text">0%</span>
+                                <span class="percentage"></span>
+                            </div><div class="info"></div>
+                            <div class="btns">
+                                <div id="filePicker2"></div><div class="uploadBtn">开始上传</div>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
