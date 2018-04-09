@@ -144,7 +144,7 @@
                 innerHTML: '点击选择图片'
             },
             formData: {
-                uid: 123
+                token: localStorage.getItem("token")
             },
             dnd: '#dndArea',
             paste: '#uploader',
@@ -477,7 +477,7 @@
                 case 'finish':
                     stats = uploader.getStats();
                     if ( stats.successNum ) {
-                        alert( '上传成功' );
+                        alert( '上传成功111' );
                     } else {
                         // 没有成功的图片，重设
                         state = 'done';
