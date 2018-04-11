@@ -75,7 +75,8 @@ var vm = new Vue({
 		title: null,
 		news: {},
         ue: ''
-	},
+    },
+    //页面加载后执行
     mounted() {
 		//实例化编辑器
 		//建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
@@ -153,6 +154,9 @@ var vm = new Vue({
                                         vm.reload();
                                     }
                                 });
+                                wuploader.options.formData.token = localStorage.getItem("token");
+                                //上传图片
+                                wuploader.upload();
                             });
                         }else{
                             alert(r.msg);
@@ -215,3 +219,25 @@ var vm = new Vue({
         }
 	}
 });
+//上传图片
+var wuploader;
+$(document).ready(function() {     
+    // 初始化上传插件
+    initWebUploaderUI();
+
+});
+//初始化上传插件
+function initWebUploaderUI(){     
+    // WebUploader实例，前三个参数对应的是jsp页面的div的id，最后一个参数，是后台调用的上传方法名字
+    wuploader = CommonWebUploader.initWebUploader('#uploader', '#filePicker', '#filePicker2', baseURL + 'upload/uploadfile');
+    // 所有文件上传结束时
+    wuploader.on( 'uploadFinished', function() {            
+        var stats = wuploader.getStats();
+        // 全部上传成功
+        if (!stats.uploadFailNum) {
+         
+            // alert("上传成功！");
+        }
+    });
+ 
+}
