@@ -112,10 +112,11 @@ var vm = new Vue({
 			if(id == null){
 				return ;
 			}
-			vm.showList = false;
-            vm.title = "修改";
-            
-            vm.getInfo(id);
+			// vm.showList = false;
+            // vm.title = "修改";
+            localStorage.setItem("newsId", id);
+            window.location.href = "../news/newsedit.html";
+            //vm.getInfo(id);
 		},
 		saveOrUpdate: function (event) {
             var url = null;
@@ -155,6 +156,8 @@ var vm = new Vue({
                                     }
                                 });
                                 wuploader.options.formData.token = localStorage.getItem("token");
+                                wuploader.options.formData.proId = newsId;
+                                wuploader.options.formData.flagType = 1;
                                 //上传图片
                                 wuploader.upload();
                             });
